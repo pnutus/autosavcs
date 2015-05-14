@@ -1,15 +1,16 @@
-from pygit2 import Repository
+import subprocess
 from collections import Counter
 import re
 
 BLACKLIST = "if return def not for in while".split()
 
+def git(command):
+    return subprocess.check_output(["git"] + command.split()).decode("utf-8")
+
 def commit_message_guess():
-    diff = repo.diff()
-    if not diff.patch:
-        return ""
-    add_text = filter_lines(is_add_line, diff.patch)
-    delete_text = filter_lines(is_delete_line, diff.patch)
+    diff = git("diff --word-diff=porcelain")
+    add_text = filter_lines(is_add_line, diff)
+    delete_text = filter_lines(is_delete_line, diff)
     
     add_counts = word_counts(add_text, BLACKLIST)
     delete_counts = word_counts(delete_text, BLACKLIST)
@@ -47,7 +48,4 @@ def is_add_line(line):
 def is_delete_line(line):
     return re.match("^[-](?![-]{2})", line)
 
-repo = Repository(".git")
-diff = repo.diff()
-print(diff.patch)
 print(commit_message_guess())
