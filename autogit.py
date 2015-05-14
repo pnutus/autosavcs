@@ -2,9 +2,6 @@ from pygit2 import Repository
 from collections import Counter
 import re
 
-repo = Repository(".git")
-diff = repo.diff()
-
 
 def commit_message_guess():
     diff = repo.diff()
@@ -26,5 +23,8 @@ def filter_lines(predicate, text):
 def is_diff_line(line):
     return re.match("^[+-](?![+]{2}|[-]{2})", line)
 
+
+repo = Repository(".git")
+diff = repo.diff()
 print(diff.patch)
 print(commit_message_guess())
