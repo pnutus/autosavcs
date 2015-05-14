@@ -1,2 +1,2 @@
-* guessed commit message
-    * separate "added", "deleted" and "changed"
+* actually auto-commit
+    * detect file system events
