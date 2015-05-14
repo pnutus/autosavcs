@@ -2,18 +2,21 @@ from pygit2 import Repository
 from collections import Counter
 import re
 
+BLACKLIST = "if return def not for in".split()
 
 def commit_message_guess():
     diff = repo.diff()
-    counts = word_counts(diff.patch)
+    if not diff.patch:
+        return ""
+    diff_text = filter_lines(is_diff_line, diff.patch)
+    counts = word_counts(diff_text, BLACKLIST)
     most_common = counts.most_common(3)
     keyword_string = " ".join(x[0] for x in most_common)
     return "keywords: " + keyword_string
 
-def word_counts(text):
-    diff_text = filter_lines(is_diff_line, text)
-    print(diff_text)
-    words = re.findall("[\w_]+", diff_text)
+def word_counts(text, blacklist=[]):
+    words = re.findall("[\w_]+", text)
+    words = [word for word in words if word not in blacklist]
     return Counter(words)
 
 def filter_lines(predicate, text):
