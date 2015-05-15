@@ -18,13 +18,9 @@ def commit_message_guess():
     add_counts -= change_counts
     delete_counts -= change_counts
     
-    msg = ""
+    count_strings = map(print_most_common, [add_counts, delete_counts, change_counts])
     
-    msg += "+ " + print_most_common(add_counts)
-    msg += "\n- " + print_most_common(delete_counts)
-    msg += "\n% " + print_most_common(change_counts)
-    
-    return msg
+    return "+ {}\n- {}\n% {}".format(*count_strings)
 
 def print_most_common(counts):
     most_common = counts.most_common(3)
