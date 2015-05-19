@@ -1,6 +1,19 @@
 import subprocess
 from collections import Counter
 import re
+import time
+import watchdog
+from watchdog.observers import Observer
+from watchdog.events import LoggingEventHandler
+
+class FileSystemEventDetector(watchdog.events.FileSystemEventHandler):
+    """docstring for FileSystemEventDetector"""
+    def __init__(self):
+        super(FileSystemEventDetector, self).__init__()
+
+    def on_any_event(self, event):
+        print("")
+        print(commit_message_guess())
 
 BLACKLIST = "if return def not for in while".split()
 
@@ -45,3 +58,14 @@ def is_delete_line(line):
     return re.match("^[-](?![-]{2})", line)
 
 print(commit_message_guess())
+
+event_detector = FileSystemEventDetector()
+observer = Observer()
+observer.schedule(event_detector, ".", recursive=False)
+observer.start()
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    observer.stop()
+observer.join()
